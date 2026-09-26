@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, signInAnonymously } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 // Firebase 설정
@@ -17,6 +17,14 @@ const app = initializeApp(firebaseConfig);
 
 // Authentication
 export const auth = getAuth(app);
+
+// 로그인 화면이 없으므로, 로그인된 사용자가 없으면 익명으로 로그인.
+// 익명 계정은 이 기기(브라우저)에 유지되고, 대화 기록은 그 uid 아래에 저장됨
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    signInAnonymously(auth).catch((error) => console.error('익명 로그인 실패:', error));
+  }
+});
 
 // Firestore
 export const db = getFirestore(app);

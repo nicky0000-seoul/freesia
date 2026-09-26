@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, History, BarChart3, Settings } from 'lucide-react';
+import { Home, History, BarChart3 } from 'lucide-react';
 import './BottomNav.css';
 
 const BottomNav = () => {
@@ -11,7 +11,6 @@ const BottomNav = () => {
     { path: '/home', icon: Home, label: '홈' },
     { path: '/history', icon: History, label: '히스토리' },
     { path: '/stats', icon: BarChart3, label: '통계' },
-    { path: '/settings', icon: Settings, label: '설정' },
   ];
 
   return (

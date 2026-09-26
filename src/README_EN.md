@@ -75,7 +75,7 @@ Freesia is a Korean-language emotional coaching web application powered by Claud
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/freesia.git
+git clone https://github.com/nicky0000-seoul/freesia.git
 cd freesia
 ```
 

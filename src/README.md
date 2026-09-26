@@ -99,7 +99,7 @@ freesia/
 
 1. **저장소 클론**
 ```bash
-git clone https://github.com/nicky202505/freesia.git
+git clone https://github.com/nicky0000-seoul/freesia.git
 cd freesia
 ```
 

@@ -3,7 +3,6 @@ import { MessageSquare } from 'lucide-react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { auth, db } from '../firebase';
-import BottomNav from './BottomNav';
 import AppHeader from './AppHeader';
 import { findEmotion } from '../emotions';
 import './HistoryPage.css';
@@ -77,7 +76,6 @@ const HistoryPage = () => {
       <AppHeader />
 
       <main className="page-main">
-        <h2 className="page-title">대화 히스토리</h2>
 
         {loading ? (
           <p className="state-text">히스토리를 불러오는 중...</p>
@@ -85,7 +83,7 @@ const HistoryPage = () => {
           <div className="empty-container">
             <MessageSquare size={64} />
             <p className="empty-text">저장된 대화가 없어요</p>
-            <p className="empty-subtext">홈에서 대화를 시작해 보세요.</p>
+            <p className="empty-subtext">채팅에서 대화를 시작해 보세요.</p>
           </div>
         ) : (
           <div className="conversations-list">
@@ -128,8 +126,6 @@ const HistoryPage = () => {
           </div>
         )}
       </main>
-
-      <BottomNav />
     </div>
   );
 };

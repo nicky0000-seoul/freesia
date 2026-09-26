@@ -3,7 +3,6 @@ import { Send, RotateCcw } from 'lucide-react';
 import { auth, db } from '../firebase';
 import { collection, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
-import BottomNav from './BottomNav';
 import AppHeader from './AppHeader';
 import { EMOTIONS } from '../emotions';
 import './HomePage.css';
@@ -260,9 +259,6 @@ const HomePage = () => {
           </div>
         )}
       </main>
-
-      {/* 하단 네비게이션 */}
-      <BottomNav />
     </div>
   );
 };  

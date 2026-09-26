@@ -1,12 +1,22 @@
 .app-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  flex-direction: column;
+  gap: 16px;
   padding: 24px 20px 16px;
   max-width: 600px;
   width: 100%;
   margin: 0 auto;
+  background: var(--surface);
+}
+
+.app-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .header-subtitle {
@@ -26,10 +36,10 @@
 }
 
 @media (max-width: 768px) {
-  .app-header { padding: 20px 16px 12px; }
+  .app-header { padding: 20px 16px 12px; gap: 12px; }
   .header-title { font-size: 24px; }
 }
 
 @media (max-width: 480px) {
-  .app-header { padding: 16px 12px 8px; }
+  .app-header { padding: 16px 12px 10px; }
 }

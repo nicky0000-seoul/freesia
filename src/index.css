@@ -42,7 +42,7 @@ body {
   max-width: 800px; /* 태블릿 기준 최대 너비 */
   display: flex;
   flex-direction: column;
-  padding-bottom: 96px; /* 하단 네비게이션 공간 */
+  padding-bottom: 24px;
 }
 
 .page-main {
@@ -51,14 +51,6 @@ body {
   max-width: 600px;
   width: 100%;
   margin: 0 auto;
-}
-
-.page-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--ink);
-  margin-bottom: 20px;
-  text-align: center;
 }
 
 /* 카드: 공통 카드 스펙 */
@@ -85,7 +77,6 @@ body {
 
 @media (max-width: 768px) {
   .page-main { padding: 4px 16px 20px; }
-  .page-title { font-size: 18px; }
 }
 
 @media (max-width: 480px) {

@@ -4,7 +4,6 @@ import { collection, query, onSnapshot, Timestamp } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { TrendingUp, MessageSquare, Lightbulb } from 'lucide-react';
-import BottomNav from './BottomNav';
 import AppHeader from './AppHeader';
 import { CHART_ORDER, findEmotion } from '../emotions';
 import './StatsPage.css';
@@ -154,7 +153,6 @@ const StatsPage = () => {
 
       {/* 메인 콘텐츠 */}
       <main className="page-main">
-        <h2 className="page-title">대화 통계</h2>
 
         {loading ? (
           <p className="state-text">통계를 불러오는 중...</p>
@@ -250,9 +248,6 @@ const StatsPage = () => {
           </div>
         )}
       </main>
-
-      {/* 하단 네비게이션 */}
-      <BottomNav />
     </div>
   );
 };

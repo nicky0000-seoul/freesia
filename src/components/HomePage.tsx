@@ -4,6 +4,8 @@ import { auth, db } from '../firebase';
 import { collection, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import BottomNav from './BottomNav';
+import AppHeader from './AppHeader';
+import { EMOTIONS } from '../emotions';
 import './HomePage.css';
 
 interface Message {
@@ -20,15 +22,6 @@ const HomePage = () => {
   const [conversationId, setConversationId] = useState<string>('');
   const [selectedEmotion, setSelectedEmotion] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const emotions = [
-    { name: '기쁨', emoji: '😊', color: '#FFD93D' },
-    { name: '슬픔', emoji: '😢', color: '#94C9FF' },
-    { name: '우울', emoji: '😔', color: '#B4A7D6' },
-    { name: '분노', emoji: '😠', color: '#FFB4B4' },
-    { name: '외로움', emoji: '😞', color: '#C7B8EA' },
-    { name: '평온', emoji: '😌', color: '#B8E6D5' },
-  ];
 
   // 사용자 인증 상태 확인
   useEffect(() => {
@@ -162,19 +155,15 @@ const HomePage = () => {
   };
 
   return (
-    <div className="home-container">
-      {/* 헤더 */}
-      <header className="home-header">
-        <p className="header-subtitle">emotional coaching service</p>
-        <h1 className="header-title">프리지아</h1>
-      </header>
+    <div className="page home-container">
+      <AppHeader />
 
       {/* 메인 콘텐츠 */}
-      <main className="home-main">
+      <main className="page-main home-main">
         {showWelcome ? (
           /* 환영 화면 */
           <div className="welcome-section">
-            <div className="welcome-message">
+            <div className="welcome-message surface-card">
               <p className="welcome-text">
                 안녕하세요, 제 이름은 <span className="highlight">프리지아</span>예요.
                 <br />
@@ -198,12 +187,12 @@ const HomePage = () => {
 
             {/* 감정 버튼 그리드 */}
             <div className="emotions-grid">
-              {emotions.map((emotion) => (
+              {EMOTIONS.map((emotion) => (
                 <button
                   key={emotion.name}
                   onClick={() => handleEmotionClick(emotion.name)}
                   className="emotion-button"
-                  style={{ backgroundColor: emotion.color }}
+                  style={{ '--emo': emotion.color } as React.CSSProperties}
                 >
                   <span className="emotion-emoji">{emotion.emoji}</span>
                   <span className="emotion-name">{emotion.name}</span>

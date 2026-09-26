@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { auth, db } from '../firebase';
 import { collection, query, onSnapshot, Timestamp } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { TrendingUp, MessageSquare, Lightbulb } from 'lucide-react';
 import BottomNav from './BottomNav';
+import AppHeader from './AppHeader';
+import { CHART_ORDER, findEmotion } from '../emotions';
 import './StatsPage.css';
 
 interface Conversation {
@@ -14,20 +16,32 @@ interface Conversation {
   messages: Array<{ role: string; content: string }>;
 }
 
+interface EmotionTooltipProps {
+  total: number;
+  active?: boolean;
+  payload?: Array<{ name: string; value: number; payload: { color: string } }>;
+}
+
+// 도넛 조각에 마우스를 올리면 감정·횟수·비율 표시 (글자는 ink, 색은 점으로만)
+const EmotionTooltip = ({ active, payload, total }: EmotionTooltipProps) => {
+  if (!active || !payload?.length) return null;
+  const { name, value, payload: item } = payload[0];
+  const percent = total ? Math.round((value / total) * 100) : 0;
+  return (
+    <div className="chart-tooltip">
+      <span className="legend-color" style={{ backgroundColor: item.color }} />
+      <span className="chart-tooltip-name">{name}</span>
+      <span className="chart-tooltip-value">
+        {value}회 · {percent}%
+      </span>
+    </div>
+  );
+};
+
 const StatsPage = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-
-  const emotionColors: { [key: string]: string } = {
-    '기쁨': '#FFD93D',
-    '슬픔': '#94C9FF',
-    '우울': '#B4A7D6',
-    '분노': '#FFB4B4',
-    '외로움': '#C7B8EA',
-    '평온': '#B8E6D5',
-    '일반': '#E0E0E0',
-  };
 
   // 사용자 인증 상태 확인
   useEffect(() => {
@@ -86,11 +100,14 @@ const StatsPage = () => {
       emotionCounts[emotion] = (emotionCounts[emotion] || 0) + 1;
     });
 
-    return Object.entries(emotionCounts).map(([name, value]) => ({
-      name,
-      value,
-      color: emotionColors[name] || '#E0E0E0'
-    }));
+    // 색은 감정을 따라가고, 조각 순서는 CHART_ORDER 로 고정 (이웃 조각 대비를 검증한 순서)
+    const rank = (name: string) => {
+      const i = CHART_ORDER.indexOf(name);
+      return i === -1 ? CHART_ORDER.length : i;
+    };
+    return Object.entries(emotionCounts)
+      .sort(([a], [b]) => rank(a) - rank(b))
+      .map(([name, value]) => ({ name, value, color: findEmotion(name).color }));
   };
 
   const getMostFrequentEmotion = () => {
@@ -132,25 +149,19 @@ const StatsPage = () => {
   const insights = getAIInsights();
 
   return (
-    <div className="stats-container">
-      {/* 헤더 */}
-      <header className="stats-header">
-        <p className="header-subtitle">emotional coaching service</p>
-        <h1 className="header-title">프리지아</h1>
-      </header>
+    <div className="page stats-container">
+      <AppHeader />
 
       {/* 메인 콘텐츠 */}
-      <main className="stats-main">
-        <h2 className="stats-page-title">대화 통계</h2>
+      <main className="page-main">
+        <h2 className="page-title">대화 통계</h2>
 
         {loading ? (
-          <div className="loading-container">
-            <p>통계를 불러오는 중...</p>
-          </div>
+          <p className="state-text">통계를 불러오는 중...</p>
         ) : (
           <div className="stats-content">
             {/* 대화 현황 */}
-            <section className="stats-section">
+            <section className="stats-section surface-card">
               <h3 className="section-title">대화 현황</h3>
               <div className="stats-grid">
                 <div className="stat-card">
@@ -167,7 +178,7 @@ const StatsPage = () => {
             </section>
 
             {/* 감정 분포 */}
-            <section className="stats-section">
+            <section className="stats-section surface-card">
               <h3 className="section-title">감정 분포</h3>
               <div className="chart-container">
                 {emotionData.length > 0 ? (
@@ -182,11 +193,15 @@ const StatsPage = () => {
                           outerRadius={80}
                           paddingAngle={2}
                           dataKey="value"
+                          stroke="var(--chart-surface)"
+                          strokeWidth={2}
+                          isAnimationActive={false}
                         >
                           {emotionData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={entry.color} />
                           ))}
                         </Pie>
+                        <Tooltip content={<EmotionTooltip total={getTotalConversations()} />} />
                       </PieChart>
                     </ResponsiveContainer>
                     <div className="emotion-legend">
@@ -212,7 +227,7 @@ const StatsPage = () => {
             </section>
 
             {/* 감정 추이 그래프 */}
-            <section className="stats-section">
+            <section className="stats-section surface-card">
               <h3 className="section-title">감정 추이 그래프</h3>
               <div className="graph-placeholder">
                 <p className="placeholder-text">최근 7일 감정 추이</p>
@@ -221,7 +236,7 @@ const StatsPage = () => {
             </section>
 
             {/* AI 인사이트 */}
-            <section className="stats-section">
+            <section className="stats-section surface-card">
               <h3 className="section-title">AI 인사이트</h3>
               <div className="insights-container">
                 {insights.map((insight, index) => (

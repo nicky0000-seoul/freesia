@@ -4,6 +4,8 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import BottomNav from './BottomNav';
+import AppHeader from './AppHeader';
+import { findEmotion } from '../emotions';
 import './HistoryPage.css';
 
 interface Conversation {
@@ -13,16 +15,6 @@ interface Conversation {
   createdAt?: { toDate: () => Date };
   messages?: Array<{ role: string; content: string }>;
 }
-
-const emotionEmojiMap: Record<string, string> = {
-  '기쁨': '😊',
-  '슬픔': '😢',
-  '우울': '😔',
-  '분노': '😠',
-  '외로움': '😞',
-  '평온': '😌',
-  '일반': '💬',
-};
 
 const formatDate = (createdAt?: { toDate: () => Date }) => {
   if (!createdAt || typeof createdAt.toDate !== 'function') {
@@ -81,19 +73,14 @@ const HistoryPage = () => {
   }, [userId]);
 
   return (
-    <div className="history-container">
-      <header className="history-header">
-        <p className="header-subtitle">emotional coaching service</p>
-        <h1 className="header-title">프리지아</h1>
-      </header>
+    <div className="page history-container">
+      <AppHeader />
 
-      <main className="history-main">
-        <h2 className="history-page-title">대화 히스토리</h2>
+      <main className="page-main">
+        <h2 className="page-title">대화 히스토리</h2>
 
         {loading ? (
-          <div className="loading-container">
-            <p>히스토리를 불러오는 중...</p>
-          </div>
+          <p className="state-text">히스토리를 불러오는 중...</p>
         ) : conversations.length === 0 ? (
           <div className="empty-container">
             <MessageSquare size={64} />
@@ -104,7 +91,7 @@ const HistoryPage = () => {
           <div className="conversations-list">
             {conversations.map((conversation) => {
               const emotion = conversation.emotion || '일반';
-              const emoji = emotionEmojiMap[emotion] || '💬';
+              const { emoji, color } = findEmotion(emotion);
               const messageCount = conversation.messages?.length || 0;
               const preview =
                 conversation.preview ||
@@ -112,7 +99,11 @@ const HistoryPage = () => {
                 '대화 미리보기가 없습니다.';
 
               return (
-                <article key={conversation.id} className="conversation-card">
+                <article
+                  key={conversation.id}
+                  className="conversation-card surface-card"
+                  style={{ '--emo': color } as React.CSSProperties}
+                >
                   <div className="card-date">{formatDate(conversation.createdAt)}</div>
                   <div className="card-content">
                     <div className="card-header">

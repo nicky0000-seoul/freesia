@@ -1,4 +1,8 @@
-/* 전역 스타일 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
+@import './styles/tokens.css';
+@import './styles/emotions.css';
+
+/* 전역 스타일. 색은 tokens.css(MOCHESTRA 공통), body.tab-emotion 이 프리지아 accent 를 고름 */
 * {
   margin: 0;
   padding: 0;
@@ -8,16 +12,15 @@
 html, body {
   width: 100%;
   height: 100%;
-  margin: 0;
-  padding: 0;
 }
 
 body {
-  font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #2C2C2C; /* 어두운 배경 */
+  background: var(--surface);
+  color: var(--ink);
+  transition: background 0.2s, color 0.2s;
 }
 
 #root {
@@ -25,9 +28,66 @@ body {
   min-height: 100vh;
   display: flex;
   justify-content: center;
-  background: #2C2C2C;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+:focus-visible {
+  outline: 2px solid var(--baton);
+  outline-offset: 2px;
+}
+
+/* 세 화면 공통 페이지 틀 */
+.page {
+  width: 100%;
+  min-height: 100vh;
+  max-width: 800px; /* 태블릿 기준 최대 너비 */
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 96px; /* 하단 네비게이션 공간 */
+}
+
+.page-main {
+  flex: 1;
+  padding: 8px 20px 24px;
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* 카드: 공통 카드 스펙 */
+.surface-card {
+  background: var(--surface-raised);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--card-shadow);
+  -webkit-backdrop-filter: var(--card-blur);
+  backdrop-filter: var(--card-blur);
+}
+
+.state-text {
+  display: flex;
+  justify-content: center;
+  padding: 60px 20px;
+  color: var(--ink-muted);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .page-main { padding: 4px 16px 20px; }
+  .page-title { font-size: 18px; }
+}
+
+@media (max-width: 480px) {
+  .page-main { padding: 4px 12px 16px; }
 }

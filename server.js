@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 import express from 'express';
 import cors from 'cors';
+import Anthropic from '@anthropic-ai/sdk';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -11,6 +12,8 @@ const anthropicApiKey = (
   process.env.VITE_CLAUDE_API_KEY ||
   ''
 ).trim();
+const anthropic = new Anthropic({ apiKey: anthropicApiKey || undefined });
+
 const anthropicKeySource = process.env.CLAUDE_API_KEY
   ? 'CLAUDE_API_KEY'
   : process.env.VITE_CLAUDE_API_KEY
@@ -99,31 +102,38 @@ app.post('/api/chat', async (req, res) => {
       throw new Error('Claude API key가 설정되지 않았습니다. CLAUDE_API_KEY 또는 VITE_CLAUDE_API_KEY를 확인하세요.');
     }
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': anthropicApiKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: systemPrompt,
-        messages: messages
-      })
+    const response = await anthropic.beta.messages.create({
+      model: 'claude-opus-5',
+      max_tokens: 16000,
+      // 짧은 공감 대화라 낮은 effort 로 충분 (응답 속도·비용 절약)
+      output_config: { effort: 'low' },
+      // 안전 분류기가 거절하면 서버에서 다른 모델로 이어서 답함
+      betas: ['server-side-fallback-2026-07-01'],
+      fallbacks: 'default',
+      system: systemPrompt,
+      messages
     });
 
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error('Claude API 에러:', errorData);
-      throw new Error(`API 요청 실패: ${response.status}`);
+    if (response.stop_reason === 'refusal') {
+      console.warn('Claude 응답 거절:', response.stop_details?.category);
     }
 
-    const data = await response.json();
-    res.json(data);
+    // Opus 5 는 thinking 블록을 먼저 돌려주므로 text 블록만 모아서 전달.
+    // 앱(HomePage)이 content[0].text 를 읽으므로 같은 모양으로 맞춤
+    const text = response.content
+      .filter((block) => block.type === 'text')
+      .map((block) => block.text)
+      .join('\n')
+      .trim();
+
+    res.json({
+      content: [{ type: 'text', text: text || '지금은 답을 드리기 어려워요. 다른 이야기를 들려주시겠어요? 💛' }]
+    });
 
   } catch (error) {
+    if (error instanceof Anthropic.APIError) {
+      console.error(`Claude API 에러 ${error.status}:`, error.message);
+    }
     console.error('서버 에러:', error);
     res.status(500).json({ 
       error: '응답을 생성하는 중 오류가 발생했습니다.',

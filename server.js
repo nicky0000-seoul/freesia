@@ -51,7 +51,12 @@ app.get('/', (req, res) => {
   res.json({ 
     status: 'ok',
     message: '🌼 프리지아 서버가 정상 작동 중입니다!',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    // 배포 환경 점검용: 키 값은 노출하지 않고 어디서 읽었는지만 표시
+    anthropicKeySource,
+    anthropicKeyConfigured: anthropicApiKey.length > 0,
+    railwayService: process.env.RAILWAY_SERVICE_NAME || null,
+    railwayEnvironment: process.env.RAILWAY_ENVIRONMENT_NAME || null
   });
 });
 

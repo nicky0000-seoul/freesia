@@ -92,7 +92,7 @@ const HomePage = () => {
 
 
   const API_URL = import.meta.env.PROD 
-  ? 'https://freesia-production-b9eb.up.railway.app'
+  ? 'https://freesia-production-5edd.up.railway.app'
   : 'http://localhost:3001'; 
 
   

@@ -24,7 +24,7 @@ const allowedOrigins = [
   'https://freesia-psi.vercel.app',
   'https://nicky202505.github.io',
   'https://nicky202505.github.io/freesia',
-  'https://freesia-production-b9eb.up.railway.app'
+  'https://freesia-production-5edd.up.railway.app'
 ];
 
 app.use(cors({
